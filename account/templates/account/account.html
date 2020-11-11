@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ user.getFullName }} | Account Details{% endblock %}
+
+{% block content %}
+
+    <h1>Account Details</h1>
+
+    <table>
+        <tr>
+            <td>Name</td>
+            <td><strong>{{ user.getFullName }}</strong></td>
+        </tr>
+        <tr>
+            <td>e-mail</td>
+            <td><strong>{{ user.email }}</strong><td>
+        <tr>
+    </table>
+
+    <a href = "{% url 'account:changePassword' %}" class = "button">Change Password</a>
+    <a href = "{% url 'account:logOut' %}" class = "button">Log Out</a>
+
+{% endblock %}

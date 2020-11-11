@@ -1,0 +1,40 @@
+{% for tournament, tournamentInfo in tournaments %}
+
+    <h3>Tournament Option {{forloop.counter}}</h3>
+
+    {% if userIsOrganiser == True %}
+        <a href = "{% url 'tournament:chooseTournament' tournament_pk forloop.counter %}" class = "buttonSlim">Choose</a>
+    {% endif %}
+
+    <p>Duration:<b>
+        {% if tournamentInfo.0.0 < 1 %}
+        {% else %}
+            {{ tournamentInfo.0.0 }} hour{{ tournamentInfo.0.0|pluralize }}
+        {% endif %}
+        {% if tournamentInfo.0.1 < 1 %}
+        {% else %}
+            {{ tournamentInfo.0.1 }} minutes
+        {% endif %}</b></p>
+
+    <p>Number of Actual Games: <b>{{ tournamentInfo.1 }}</b></p>
+    <p>Number of Bye Games: <b>{{ tournamentInfo.2}}</b></p>
+
+    <ul>
+        {% for timeslot in tournament %}
+            <li>Timeslot {{ forloop.counter }}</li>
+
+            <ul>
+                {% for pitch in timeslot %}
+                    <li>Pitch {{ forloop.counter }}</li>
+                    <ul>
+                        {% for game in pitch %}
+                            <li>{{ game.0 }}: <b>{{ game.1.0 }}</b> vs <b>{{ game.1.1 }}</b></li>
+                        {% endfor %}
+                    </ul>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    </ul>
+    </br>
+
+{% endfor %}

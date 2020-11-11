@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ tournament.name }} | Add Results{% endblock %}
+
+{% block content %}
+    <h1>Add Results to {{ tournament.name }}</h1>
+    <h2>Please note, you need to enter all results at once to save.</h2>
+
+    <form method = "post">
+        {% csrf_token %}
+        {{ formset.management_form }}
+        <table>
+            {% for i,j in gamesWithFormset %}
+                <tr>
+                    <td class = "leftResultTeamInput"><strong>{{ i.0 }}</strong></td>
+                    {% for field in j %}
+                        <td class = "resultInput">{{ field }}</td>
+                    {% endfor %}
+                    <td><strong>{{ i.1 }}</strong></td>
+                </tr>
+            {% endfor %}
+        </table>
+        <input type = "submit" class = "button" value = "Save">
+        <a href = "{% url 'tournament:tournament' tournament.id %}" class = "button">Cancel</a>
+    </form>
+
+
+{% endblock %}

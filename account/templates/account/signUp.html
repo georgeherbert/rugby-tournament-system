@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block title %}Sign up{% endblock %}
+
+{% block content %}
+
+    <h1>Sign up</h1>
+
+    <form method = "post">
+        {% csrf_token %}
+        <table>
+            {% for i in signUpForm %}
+                <tr>
+                    <td>{{ i.label }}</td>
+                    <td>{{ i }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        <input type = "submit" class = "button" value = "Sign Up">
+        <a href = "/" class = "button">Cancel</a>
+    </form>
+
+    {% if signUpForm.errors %}
+        </br>
+        <h2>Your account could not be created because...</h2>
+        {% for field in signUpForm %}
+            {{ field.errors }}
+        {% endfor %}
+    {% endif %}
+
+{% endblock %}

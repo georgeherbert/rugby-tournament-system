@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+
+{% block title %}Rugby Tournament System{% endblock %}
+
+{% block content %}
+
+    <h1>Welcome to the rugby tournament system{% if user.is_authenticated %}, {{ user.first_name }}.{% endif %}</h1>
+    <p>This web application enables you to create rugby tournaments with ease.
+    </p>
+
+{% endblock %}

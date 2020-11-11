@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Join Team
+{% endblock %}
+
+{% block content %}
+
+    <h1>Request To Join A Team</h1>
+
+    <form method = "post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type = "submit" class = "button" value = "Search">
+        <a href = "{% url 'team:teamList' %}" class = "button">Back</a>
+    </form>
+
+    </br>
+
+    {% if searched == True %}
+        {% if matches|length == 0 %}
+            <p>Sorry, your search returned no results.</p>
+        {% else %}
+            <h1>Search Results</h1>
+            <table>
+                {% for match in matches %}
+                    <tr>
+                        <td>{{ match.name }}</td>
+                        <td><a href = "{% url 'team:sendRequest' match.id %}" class = "buttonSlim">Request</a>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+    {% endif %}
+
+{% endblock %}

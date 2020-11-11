@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+
+{% block title %}Create Team{% endblock %}
+
+{% block content %}
+    <h1>Create a Team</h1>
+    <form method = "post">
+        {% csrf_token %}
+        <table>
+            {% for i in form %}
+                <tr>
+                    <td>{{ i.label }}</td>
+                    <td>{{ i }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        <input type = "submit" class = "button" value = "Create">
+        <a href = "{% url 'team:teamList' %}" class = "button">Cancel</a>
+    </form>
+{% endblock %}

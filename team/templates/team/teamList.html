@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Teams
+{% endblock %}
+
+{% block content %}
+    <a href = "{% url 'team:createTeam' %}" class = "button">Create Team</a>
+    <a href = "{% url 'team:requestTeam' %}" class = "button">Request to Join Team</a>
+
+    {% if user.membership_set %}
+        <h1>Teams</h1>
+
+        {% if user.membership_set.count == 0 %}
+            <p>You do not currently belong to a team. Create your own or request to join one.</p>
+
+        {% else %}
+            <table>
+                {% for membership in user.membership_set.all %}
+                    <tr>
+                        <td><a href = "{% url 'team:team' membership.team.id %}" class = "listLink">{{ membership.team.name }}</a></td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+
+    {% else %}
+        <h1>You are not currently a member of any teams.</h1>
+
+    {% endif %}
+
+{% endblock %}

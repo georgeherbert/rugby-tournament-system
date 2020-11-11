@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ tournament.name }} | Add Teams{% endblock %}
+
+{% block content %}
+
+    <div class = "wrap">
+
+        <div class = "columnLeft">
+            <div class = "columnContent">
+                <h1>Add Teams to {{ tournament.name }}</h1>
+
+                <form method = "post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input type = "submit" class = "button" value = "Search">
+                    <a href = "{% url 'tournament:tournament' tournament.id %}" class = "button">Back</a>
+                </form>
+
+                </br>
+
+                {% if searched == True %}
+                    {% if matches|length == 0 %}
+                        <p>Sorry, your search returned no results.</p>
+                    {% else %}
+                        <h1>Search Results</h1>
+                        <table>
+                            {% for match in matches %}
+                                <tr>
+                                    <td>{{ match.name }}</td>
+                                    <td><a href = "{% url 'tournament:inviteTeam' tournament.id match.id %}" class = "buttonSlim">Invite</a>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class = "columnRight">
+            <div class = "columnContent">
+                <h3>Teams Invited to {{ tournament.name }}</h3>
+                {% if tournament.invite_set.count == 0 %}
+                    <p>There are no teams currently invited to this tournament who have not responded to their invite.</p>
+                {% endif %}
+                <table>
+                    {% for invite in tournament.invite_set.all %}
+                        <tr>
+                            <td>{{ invite.team.name }}</td>
+                            <td><a href = "{% url 'tournament:removeInvite' tournament.id invite.id %}" class = "buttonSlim">Uninvite</a></td>
+                        </tr>
+                    {% endfor %}
+                </table>
+
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

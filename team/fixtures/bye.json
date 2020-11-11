@@ -1,0 +1,9 @@
+[
+  {
+    "model": "team.team",
+    "pk": 1,
+    "fields": {
+      "name": "BYE"
+    }
+  }
+]

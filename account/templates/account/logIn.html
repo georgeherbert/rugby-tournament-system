@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block title %}Log in{% endblock %}
+
+{% block content %}
+
+    <h1>Log in</h1>
+
+    <form method = "post">
+        {% csrf_token %}
+        <table>
+            {% for i in logInForm %}
+                <tr>
+                    <td>{{ i.label }}</td>
+                    <td>{{ i }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        <input type = "submit" class = "button" value = "Log in">
+        <a href = "/" class = "button">Cancel</a>
+    </form>
+
+    {% if valid == False %}
+        <h2>The email or password you entered is incorrect. Please try again.</h2>
+    {% endif %}
+
+{% endblock %}

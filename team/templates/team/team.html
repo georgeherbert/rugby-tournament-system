@@ -1,0 +1,118 @@
+{% extends "layout.html" %}
+
+{% load team_extras %}
+
+{% block title %}
+    {{ team.name }} | Information
+{% endblock %}
+
+{% block content %}
+
+    {% if isTeamAdministrator == False %}
+        <a href = "{% url 'team:leaveTeam' team.id %}" class = "button">Leave Team</a>
+    {% endif %}
+    {% if isTeamAdministrator == True and team.enrollment_set.count == 0 and team.membership_set.count == 1%}
+        <a href = "{% url 'team:deleteTeam' team.id %}" class = "button">Delete Team</a>
+    {% endif %}
+
+    <h1>{{ team.name }}</h1>
+
+    <div class = "wrap">
+
+        <div class = "columnLeft">
+            <div class = "columnContent">
+
+                <h3>{{ team.name }} Statistics</h3>
+
+                <table>
+                    <tr>
+                        <td>Games played:</td>
+                        <td><strong>{{ games.count }}</strong></td>
+                    </tr>
+                    {% if games.count != 0 %}
+                        <tr><td></br></td></tr>
+                        <tr>
+                            <td>Games won:</td>
+                            <td><strong>{{ won }}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Games drawn:</td>
+                            <td><strong>{{ drawn }}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Games lost:</td>
+                            <td><strong>{{ lost }}</strong></td>
+                        </tr>
+                        <tr><td></br></td></tr>
+                        <tr>
+                            <td>Win percentage:</td>
+                            <td><strong>{{ won|divide:games.count|multiply:100 }}%</strong></td>
+                        </tr>
+                    {% endif %}
+                </table>
+                </br>
+
+                {% if isTeamAdministrator == True and team.invite_set.count != 0 %}
+                    <h3>Tournament Invites</h3>
+                    <table>
+                        {% for invite in team.invite_set.all %}
+                            <tr>
+                                <td><a href = "{% url 'tournament:tournament' invite.tournament.id %}" class = "listLink">{{ invite.tournament }}</a></td>
+                                <td><a href = "{% url 'team:acceptInvite' team.id invite.id %}" class = "buttonSlim">Accept</a></td>
+                                <td><a href = "{% url 'team:rejectInvite' team.id invite.id %}" class = "buttonSlim">Reject</a></td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class = "columnRight">
+            <div class = "columnContent">
+
+                <h3>{{ team.name }} Members</h3>
+
+                <table>
+                    {% for membership in team.membership_set.all %}
+                        <tr>
+                            <td>{{ membership.user.getFullName }}</td>
+                                {% if isTeamAdministrator == True %}
+                                    {% if membership.user != user %}
+                                        <td><a href = "{% url 'team:removeFromTeam' team.id membership.id %}" class = "buttonSlim">Remove</a></td>
+                                        {% if membership.administrator == False %}
+                                            <td><a href = "{% url 'team:promoteToTeamAdmin' team.id membership.id %}" class = "buttonSlim">Promote</a></td>
+                                        {% else %}
+                                            <td><a href = "{% url 'team:demoteFromTeamAdmin' team.id membership.id %}" class = "buttonSlim">Demote</a></td>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endif %}
+                        </tr>
+                    {% endfor %}
+                </table>
+
+                {% if isTeamAdministrator == True %}
+
+                    {% if team.request_set.count > 0 %}
+
+                        </br>
+                        <h3>Users requesting to join {{ team.name }}</h3>
+
+                        <table>
+                            <tr>
+                                {% for request in team.request_set.all %}
+                                    <td>{{ request.user }}</td>
+                                    <td><a href = "{% url 'team:requestTeamAccept' team.id request.id %}" class = "buttonSlim">Accept</a></td>
+                                    <td><a href = "{% url 'team:requestTeamReject' team.id request.id %}" class = "buttonSlim">Reject</a></td>
+                                {% endfor %}
+                            </tr>
+                        </table>
+
+                    {% endif %}
+
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Tournaments
+{% endblock %}
+
+{% block content %}
+    {% if user.membership_set.count != 0 %}
+        <a href = "{% url 'tournament:createTournament' %}" class = "button">Create Tournament</a>
+    {% endif %}
+
+    {% if user.getTournaments %}
+        <h1>Upcoming Tournaments</h1>
+        {% if tournamentsUpcoming|length == 0 %}
+            <p>The teams you are a member of have no upcoming tournaments planned.</p>
+        {% else %}
+            <table>
+                {% for tournament in tournamentsUpcoming %}
+                    <tr>
+                        <td><a href = "{% url 'tournament:tournament' tournament.id %}" class = "listLink"><strong>{{ tournament }}</strong> ({{ tournament.startDate }})</a></td>
+                    </tr>
+                {% endfor %}
+            </table>
+
+        {% endif %}
+        </br>
+        <h1>Past Tournaments</h1>
+
+        {% if tournamentsPast|length == 0 %}
+            <p>The teams you are a member of have not yet competed in any tournaments.</p>
+
+        {% else %}
+            <table>
+                {% for tournament in tournamentsPast %}
+                    <tr>
+                        <td><a href = "{% url 'tournament:tournament' tournament.id %}" class = "listLink"><strong>{{ tournament }}</strong> ({{ tournament.startDate }})</a></td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+
+    {% else %}
+        <h1>You have not competed in any tournaments, and have no tournaments planned.</h1>
+    {% endif %}
+
+{% endblock %}

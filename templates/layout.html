@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+
+<html>
+
+    {% load static %}
+
+    <head>
+
+        <title>
+            {% block title %}{% endblock %}
+        </title>
+
+        <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+
+    </head>
+
+    <body>
+
+        <nav>
+            <a href = "{% url 'index' %}" class = "navTitle"><b>Rugby Tournament System</b></a>
+            {% if user.is_authenticated %}
+                <a href = "{% url 'account:account' %}" class = "navItem">Account</a>
+                <a href = "{% url 'tournament:tournamentList' %}" class = "navItem">Tournaments</a>
+                <a href = "{% url 'team:teamList' %}" class = "navItem">Teams</a>
+            {% else %}
+                <a href = "{% url 'account:signUp' %}" class = "navItem">Sign up</a>
+                <a href = "{% url 'account:logIn' %}" class = "navItem">Log in</a>
+            {% endif %}
+        </nav>
+
+        <div id = "content">
+            {% block content %}{% endblock %}
+        </div>
+
+    </body>
+
+</html>

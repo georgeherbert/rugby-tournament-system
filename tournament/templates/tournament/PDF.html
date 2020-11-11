@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+
+<html>
+    <head>
+        <style type="text/css">
+            body {
+                font-size: 1.5em;
+            }
+        </style>
+    </head>
+    <body>
+
+        {% for timeslot in tournament.timeslot_set.all %}
+            <strong>Timeslot {{ timeslot.number }}</strong>
+            <ul>
+                {% for pitch in timeslot.pitchinstance_set.all %}
+                    <li>Pitch {{ pitch.name }}</li>
+                    <ul>
+                        {% for game in pitch.game_set.all %}
+                            <li>{{ game.startTime|time:"H:i" }}: <strong>{{ game.team1 }}</strong> vs <strong>{{ game.team2 }}</strong></li>
+                        {% endfor %}
+                    </ul>
+                {% endfor %}
+            </ul>
+            </br>
+        {% endfor %}
+
+    </body>
+</html>

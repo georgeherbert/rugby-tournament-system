@@ -1,0 +1,139 @@
+{% extends "layout.html" %}
+
+{% load tournament_extras %}
+
+{% block title %}
+    {{ tournament.name }} | Information
+{% endblock %}
+
+{% block content %}
+    {% if userIsOrganiser == True %}
+        {% if tournament.timeslot_set.count == 0 %}
+            <a href = "{% url 'tournament:editTournament' tournament.id %}" class = "button">Edit Tournament</a>
+        {% endif %}
+        <td><a href = "{% url 'tournament:deleteTournament' tournament.id %}" class = "button">Delete</a></td>
+    {% endif %}
+
+    <h1>{{ tournament.name }}</h1>
+    <h2>{{ tournament.location }}</h2>
+    <h2>{{ tournament.startDate }} - {{ tournament.startTime }}</h2>
+
+    <div class = "wrap">
+
+        <div class = "columnLeft">
+            <div class = "columnContent">
+                {% if tournament.enrollment_set.count < 3 %}
+                    <p>You need at least three teams in a tournament to generate games.</p>
+                {% else %}
+                    {% if tournament.timeslot_set.count == 0 %}
+                        {% if userIsOrganiser == True %}
+                            <p><strong>Once you have finished adding teams to your tournament, and enough of those teams
+                                have confirmed their attendance, choose one of the tournament options below to confirm it.</strong></p>
+                            <p><strong>By choosing an option below, any invites which have not yet been accepted will be removed.</strong></p>
+                            {% displayTournaments tournament userIsOrganiser tournament.id %}
+                        {% else %}
+                            <p>Once the tournament organiser has chosen a layout for the tournament, you will be able to view the games.</p>
+                        {% endif %}
+                    {% else %}
+                        <a href = "{% url 'tournament:exportAsPDF' tournament.id %}" class = "button">Export as PDF</a>
+                        {% if userIsOrganiser %}
+                            <a href = "{% url 'tournament:addResults' tournament.id %}" class = "button">{% if hasScores == True %}Edit{% else %}Add{% endif %} Results</a>
+                            <a href = "{% url 'tournament:changeLayout' tournament.id %}" class = "button">Change Layout</a>
+                        {% endif %}
+                        {% if hasScores == False %}
+                            {% if userIsOrganiser %}
+                                <p><strong>If you want to make changes to your tournament settings, such as changing the number of pitches or inviting more teams,
+                                    please click the "Change Layout" button. This will delete the currently selected layout, and you will be able
+                                    to make changes to your tournament once again.</strong></p>
+                            {% endif %}
+                            <ul>
+                                {% for timeslot in tournament.timeslot_set.all %}
+                                    <li>Timeslot {{ timeslot.number }}</li>
+                                    <ul>
+                                        {% for pitch in timeslot.pitchinstance_set.all %}
+                                            <li>Pitch {{ pitch.name }}</li>
+                                            <ul>
+                                                {% for game in pitch.game_set.all %}
+                                                    <li>{{ game.startTime|time:"H:i" }}: <strong>{{ game.team1 }}</strong> vs <strong>{{ game.team2 }}</strong></li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% endfor %}
+                                    </ul>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <table class = "fixtures">
+                                {% for timeslot in tournament.timeslot_set.all %}
+                                    {% for pitch in timeslot.pitchinstance_set.all %}
+                                        {% for game in pitch.game_set.all %}
+                                            <tr>
+                                                <td class = "team1"><strong>{{ game.team1 }}</strong></td>
+                                                <td class = "score">{{ game.team1Score }}</td>
+                                                <td class = "score">{{ game.team2Score }}</td>
+                                                <td class = "team2"><strong>{{ game.team2 }}</strong></td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% endfor %}
+                                {% endfor %}
+                            </table>
+                        {% endif %}
+
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class = "columnRight">
+            <div class = "columnContent">
+
+                <h3>Teams Competing in {{ tournament.name }}</h3>
+                {% if userIsOrganiser == True and tournament.timeslot_set.count == 0%}
+                    <a href = "{% url 'tournament:addTeamsToTournament' tournament.id %}" class = "button containerButton">Manage Invites</a>
+                {% endif %}
+
+                {% if tournament.enrollment_set.count == 0 %}
+                    <p>Add teams to the tournament.</p>
+
+                {% else %}
+                    {% if numOfOrganisers != 1 and userIsOrganiser == True %}
+                        <p>There are currently {{ numOfOrganisers }} teams which can make changes to this tournament. They are marked with "(Organiser)"
+                            Remove all but one of them to change this.</p>
+                    {% endif %}
+                    <table>
+                        {% for enrollment in tournament.enrollment_set.all %}
+                            <tr>
+                                <td>{{ enrollment.team.name }} {% if enrollment.organiser == True %}<strong>(Organiser)</strong>{% endif %}</td>
+                                {% if userIsOrganiser == True %}
+                                    {% if enrollment.organiser == True and numOfOrganisers != 1 and tournament.timeslot_set.count == 0%}
+                                        <td><a href = "{% url 'tournament:removeTeamFromTournament' tournament.id enrollment.id %}" class = "buttonSlim">Remove</a></td>
+                                    {% endif %}
+
+                                    {% if enrollment.organiser == False and tournament.timeslot_set.count == 0 %}
+                                        <td><a href = "{% url 'tournament:removeTeamFromTournament' tournament.id enrollment.id %}" class = "buttonSlim">Remove</a></td>
+                                    {% endif %}
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </table>
+
+                    {% if tournament.timeslot_set.count == 0 %}
+                        </br>
+                        <h3>Teams Invited to {{ tournament.name }}</h3>
+                        {% if tournament.invite_set.count == 0 %}
+                            <p>There are no teams currently invited to this tournament who have not responded to their invite.</p>
+                        {% endif %}
+                        <table>
+                            {% for invite in tournament.invite_set.all %}
+                                <tr>
+                                    <td>{{ invite.team.name }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    {% endif %}
+                {% endif %}
+
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
